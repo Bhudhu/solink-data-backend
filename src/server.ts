@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { getStoredData } from "./storeData"; // ✅ Ensure this function exists
+import { getStoredData, storeData } from "./storeData"; // ✅ Ensure these functions exist
 
 dotenv.config();
 
@@ -16,21 +16,42 @@ app.use(cors({
 
 // ✅ Root Route
 app.get("/", (_req: Request, res: Response) => { // ✅ `_req` indicates unused variable
-  res.send("SOLINK Weather API is running!");
+  res.send("🌤️ SOLINK Weather API is running!");
 });
 
 // ✅ Fetch stored weather data
-app.get("/fetch", async (_req: Request, res: Response): Promise<void> => { // ✅ Explicitly type the response
+app.get("/fetch", async (_req: Request, res: Response): Promise<void> => { 
   try {
+    console.log("🔍 Fetching stored weather data...");
     const data = await getStoredData();
+
     if (!data || data.length === 0) {
+      console.warn("⚠️ No data found in database.");
       res.status(404).json({ error: "No data found" });
       return;
     }
+
+    console.log(`✅ Returning ${data.length} stored records.`);
     res.json({ data });
   } catch (error) {
     console.error("❌ Error fetching stored data:", error);
     res.status(500).json({ error: "Error fetching stored data" });
+  }
+});
+
+// ✅ Endpoint to manually fetch and store new weather data from Solcast API
+app.get("/update", async (_req: Request, res: Response): Promise<void> => {
+  try {
+    console.log("🔄 Fetching and storing new weather data...");
+    await storeData();
+
+    const newData = await getStoredData();
+    console.log(`✅ Successfully stored ${newData.length} new records.`);
+    
+    res.json({ message: "New weather data fetched and stored successfully.", data: newData });
+  } catch (error) {
+    console.error("❌ Error updating weather data:", error);
+    res.status(500).json({ error: "Error updating weather data" });
   }
 });
 

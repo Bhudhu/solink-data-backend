@@ -9,7 +9,7 @@ export const storeData = async () => {
 
   if (!fetchedData || !fetchedData.data || !Array.isArray(fetchedData.data)) {
     console.error("❌ No valid data received from Solcast API.");
-    return;
+    return false;
   }
 
   console.log(`✅ Successfully fetched ${fetchedData.data.length} entries from Solcast.`);
@@ -17,6 +17,8 @@ export const storeData = async () => {
   try {
     console.log("📌 Beginning database transaction...");
     await query("BEGIN");
+
+    let insertedCount = 0;
 
     for (const item of fetchedData.data) {
       console.log("📝 Processing item:", item);
@@ -29,34 +31,58 @@ export const storeData = async () => {
         relative_humidity, 
         surface_pressure, 
         wind_speed_10m, 
-        pv_power_rooftop 
+        pv_power_rooftop
       } = item;
 
+      const pv_power_watts = pv_power_rooftop * 1000; // Convert kW to W
+      const timestamp = new Date(period_end);
+
+      // ✅ Prevent duplicate entries by checking existing timestamp
+      const existing = await query(
+        `SELECT id FROM weather_data WHERE timestamp = $1 LIMIT 1;`,
+        [timestamp]
+      );
+
+      if (existing.rows.length > 0) {
+        console.warn(`⚠️ Skipping duplicate entry for timestamp: ${timestamp}`);
+        continue;
+      }
+
       console.log("📌 Inserting into database:", {
-        timestamp: new Date(period_end),
+        timestamp,
         air_temp,
         dni,
         ghi,
         relative_humidity,
         surface_pressure,
         wind_speed_10m,
-        pv_power_rooftop
+        pv_power_watts
       });
 
       await query(
-        `INSERT INTO weather_data (timestamp, air_temp, dni, ghi, relative_humidity, surface_pressure, wind_speed_10m, pv_power_rooftop)
+        `INSERT INTO weather_data (timestamp, air_temp, dni, ghi, relative_humidity, surface_pressure, wind_speed_10m, pv_power_watts)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [new Date(period_end), air_temp, dni, ghi, relative_humidity, surface_pressure, wind_speed_10m, pv_power_rooftop]
+        [timestamp, air_temp, dni, ghi, relative_humidity, surface_pressure, wind_speed_10m, pv_power_watts]
       );
 
-      console.log("✅ Entry inserted successfully.");
+      console.log(`✅ Entry inserted successfully for timestamp: ${timestamp}`);
+      insertedCount++;
     }
 
     await query("COMMIT");
-    console.log("✅ All data stored successfully.");
+
+    if (insertedCount > 0) {
+      console.log(`✅ ${insertedCount} new records stored successfully.`);
+      return true;
+    } else {
+      console.warn("⚠️ No new data was inserted.");
+      return false;
+    }
+
   } catch (error) {
     await query("ROLLBACK");
     console.error("❌ Error storing data, rolling back transaction:", error);
+    return false;
   }
 };
 

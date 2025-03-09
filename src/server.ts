@@ -1,7 +1,8 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { getStoredData, storeData } from "./storeData"; // ✅ Ensure these functions exist
+import { getStoredData, storeData } from "./storeData";
+import scheduleCronJob from "./cronJob";
 
 dotenv.config();
 
@@ -54,6 +55,9 @@ app.get("/update", async (_req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: "Error updating weather data" });
   }
 });
+
+// ✅ Start the cron job
+scheduleCronJob(); 
 
 // ✅ Start the server
 app.listen(PORT, () => {

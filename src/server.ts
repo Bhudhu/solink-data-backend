@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ Enable CORS for frontend requests
 app.use(cors({
-  origin: ["http://localhost:5173", "https://your-deployed-frontend-url.com"],
+  origin: ["http://localhost:5173", "https://solink-data-frontend-dpjawpnz4-tadiwas-projects-d210a9e4.vercel.app/"],
   methods: ["GET"],
 }));
 

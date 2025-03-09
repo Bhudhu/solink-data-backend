@@ -5,6 +5,7 @@ dotenv.config();
 
 const SOLCAST_API_URL = process.env.SOLCAST_API_URL;
 
+
 if (!SOLCAST_API_URL) {
   console.error("❌ ERROR: SOLCAST_API_URL is not defined. Check your .env file.");
   process.exit(1);

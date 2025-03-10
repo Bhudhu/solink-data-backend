@@ -1,7 +1,7 @@
 import { query } from "./db";
 import { fetchSolcastData } from "./fetchData";
 
-// ✅ Function to Store Weather Data
+//Function to Store Weather Data
 export const storeData = async () => {
   console.log("🔄 Fetching data from Solcast...");
 
@@ -37,7 +37,7 @@ export const storeData = async () => {
       const pv_power_watts = pv_power_rooftop * 1000; // Convert kW to W
       const timestamp = new Date(period_end);
 
-      // ✅ Prevent duplicate entries by checking existing timestamp
+      //Prevent duplicate entries by checking existing timestamp
       const existing = await query(
         `SELECT id FROM weather_data WHERE timestamp = $1 LIMIT 1;`,
         [timestamp]
@@ -86,7 +86,7 @@ export const storeData = async () => {
   }
 };
 
-// ✅ Retrieve stored weather data
+//Retrieve stored weather data
 export const getStoredData = async () => {
   try {
     console.log("🔍 Fetching stored weather data from database...");

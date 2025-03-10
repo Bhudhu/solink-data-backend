@@ -37,7 +37,7 @@ const storeData = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.storeData = storeData;
-// ✅ Retrieve stored weather data
+//Retrieve stored weather data
 const getStoredData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("🔍 Fetching stored weather data...");

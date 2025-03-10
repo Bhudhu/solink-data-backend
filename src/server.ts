@@ -6,21 +6,21 @@ import scheduleCronJob from "./cronJob";
 
 dotenv.config();
 
-const app: Application = express(); // ✅ Explicitly type `app` as an Express Application
+const app: Application = express(); 
 const PORT = process.env.PORT || 5000;
 
-// ✅ Enable CORS for frontend requests
+//Enable CORS for frontend requests
 app.use(cors({
-  origin: ["http://localhost:5173", "https://solink-data-frontend-dpjawpnz4-tadiwas-projects-d210a9e4.vercel.app/"],
+  origin: ["http://localhost:5173"],
   methods: ["GET"],
 }));
 
-// ✅ Root Route
-app.get("/", (_req: Request, res: Response) => { // ✅ `_req` indicates unused variable
+//Root Route
+app.get("/", (_req: Request, res: Response) => { 
   res.send("🌤️ SOLINK Weather API is running!");
 });
 
-// ✅ Fetch stored weather data
+//Fetch stored weather data
 app.get("/fetch", async (_req: Request, res: Response): Promise<void> => { 
   try {
     console.log("🔍 Fetching stored weather data...");
@@ -40,7 +40,7 @@ app.get("/fetch", async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-// ✅ Endpoint to manually fetch and store new weather data from Solcast API
+//Endpoint to manually fetch and store new weather data from Solcast API
 app.get("/update", async (_req: Request, res: Response): Promise<void> => {
   try {
     console.log("🔄 Fetching and storing new weather data...");
@@ -56,10 +56,10 @@ app.get("/update", async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-// ✅ Start the cron job
+//Start the cron job
 scheduleCronJob(); 
 
-// ✅ Start the server
+//Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

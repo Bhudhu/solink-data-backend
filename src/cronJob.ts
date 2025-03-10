@@ -20,7 +20,7 @@ const scheduleCronJob = () => {
   });
 };
 
-// ✅ Ensure cron job starts when this file is executed
+//Ensure cron job starts when this file is executed
 scheduleCronJob();
 
 export default scheduleCronJob;

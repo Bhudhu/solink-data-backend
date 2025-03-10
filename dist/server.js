@@ -15,20 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const storeData_1 = require("./storeData"); // ✅ Ensure this function exists
+const storeData_1 = require("./storeData");
 dotenv_1.default.config();
-const app = (0, express_1.default)(); // ✅ Explicitly type `app` as an Express Application
+const app = (0, express_1.default)(); 
 const PORT = process.env.PORT || 5000;
-// ✅ Enable CORS for frontend requests
+
+//Enable CORS for frontend requests
 app.use((0, cors_1.default)({
-    origin: ["http://localhost:5173", "https://your-deployed-frontend-url.com"],
+    origin: ["http://localhost:5173"],
     methods: ["GET"],
 }));
-// ✅ Root Route
+//Root Route
 app.get("/", (_req, res) => {
     res.send("SOLINK Weather API is running!");
 });
-// ✅ Fetch stored weather data
+//Fetch stored weather data
 app.get("/fetch", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, storeData_1.getStoredData)();
@@ -43,7 +44,7 @@ app.get("/fetch", (_req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(500).json({ error: "Error fetching stored data" });
     }
 }));
-// ✅ Start the server
+//Start the server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
